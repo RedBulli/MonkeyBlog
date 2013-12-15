@@ -1,0 +1,7 @@
+{% extends "index.html" %}
+{% block title %}List of monkeys{% endblock %}
+{% block content %}
+{% for monkey in monkeys %}
+  <li><a href="{{ monkey.href }}">{{ monkey.name }}</a></li>
+{% endfor %}
+{% endblock %}

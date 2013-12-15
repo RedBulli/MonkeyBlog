@@ -1,0 +1,8 @@
+Flask==0.10.1
+Flask-Script==0.5.3
+Flask-SQLAlchemy==1.0
+Flask-Classy==0.6.8
+SQLAlchemy==0.8.3
+SQLAlchemy-Utils==0.20.0
+git+git://github.com/wtforms/wtforms.git@wtforms2
+psycopg2==2.5.1
