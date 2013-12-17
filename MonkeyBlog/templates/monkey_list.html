@@ -2,8 +2,26 @@
 {% block title %}List of monkeys{% endblock %}
 {% block content %}
 <a href="{{ url_for('MonkeysView:create') }}">Create a new monkey</a>
-
-{% for monkey in monkeys %}
-  <li><a href="{{ url_for('MonkeysView:get', id=monkey.id) }}">{{ monkey.name }}</a></li>
-{% endfor %}
+<table>
+  <thead>
+    <tr>
+      <th>Monkey name</th><th>Best friend</th><th>Number of friends</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for monkey in monkeys %}
+    <tr>
+      <td><a href="{{ url_for('MonkeysView:get', id=monkey.id) }}">{{ monkey.name }}</a></td>
+      <td>
+        {% if monkey.best_friend %}
+          <a href="{{ url_for('MonkeysView:get', id=monkey.best_friend.id) }}">{{ monkey.best_friend.name }}</a>
+        {% else %}
+          I don't have a best friend :'(
+        {% endif %}
+      </td>
+      <td>{{monkey.friends|count}}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
 {% endblock %}
