@@ -23,13 +23,10 @@ class TestMonkeyColumnExistences(BaseTestCase):
     def test_has_column_email(self):
         assert self.monkey.email
 
-    def test_has_column_name(self):
-        assert self.monkey.name
 
-
-class TestMonkeyRelationships(BaseTestCase):
+class TestMonkeyFriends(BaseTestCase):
     def setup_method(self, method):
-        super(TestMonkeyRelationships, self).setup_method(method)
+        super(TestMonkeyFriends, self).setup_method(method)
         self.friend = MonkeyFactory(name='Ystava')
         monkey = MonkeyFactory()
         self.monkey = Monkey.query.get(monkey.id)
@@ -46,3 +43,17 @@ class TestMonkeyRelationships(BaseTestCase):
         self.monkey.friends.append(self.friend)
         with raises(IntegrityError):
             db.session.commit()
+
+
+class TestMonkeyBestFriend(BaseTestCase):
+    def setup_method(self, method):
+        super(TestMonkeyBestFriend, self).setup_method(method)
+        self.friend = MonkeyFactory(name='Paras ystava')
+        monkey = MonkeyFactory()
+        self.monkey = Monkey.query.get(monkey.id)
+
+    def test_add_best_friend(self):
+        assert self.monkey.best_friend == None
+        self.monkey.best_friend = self.friend
+        db.session.commit()
+        assert Monkey.query.get(self.monkey.id).best_friend == self.friend

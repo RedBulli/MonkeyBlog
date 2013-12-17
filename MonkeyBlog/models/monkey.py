@@ -19,6 +19,9 @@ class Monkey(db.Model):
         secondaryjoin=id==monkey_friends.c.friend_id
     )
 
+    best_friend_id = db.Column(db.Integer, db.ForeignKey('monkey.id'))
+    best_friend = db.relationship('Monkey', uselist=False)
+
     def __init__(self, name, email):
         self.name = name
         self.email = email
