@@ -54,9 +54,8 @@ class TestMonkeyDelete(ViewTestCase):
     render_templates = False
 
     def test_monkey_deletion(self):
-        MonkeyFactory()
+        monkey = MonkeyFactory()
         prev_monkey_count = Monkey.query.count()
-        monkey = Monkey.query.first()
         response = self.client.delete(
             url_for('MonkeysView:delete', id=monkey.id)
         )
