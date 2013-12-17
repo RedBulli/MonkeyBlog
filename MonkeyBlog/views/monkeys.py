@@ -12,7 +12,7 @@ class MonkeysView(FlaskView):
         return render_template('monkey_view.html', monkey=monkey)
 
     def index(self):
-        monkeys = [Monkey('Sampo', 'sampo@ff.fi'), Monkey('Toinen', 'sampo2@kk.fi')]
+        monkeys = Monkey.query.all()
         return render_template('monkey_list.html', monkeys=monkeys)
 
     def post(self):

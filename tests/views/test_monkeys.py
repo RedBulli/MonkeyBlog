@@ -18,8 +18,11 @@ class TestMonkeyListing(ViewTestCase):
     render_templates = False
 
     def test_monkey_list_values(self):
+        MonkeyFactory()
+        MonkeyFactory()
         self.client.get(url_for('MonkeysView:index'))
-        assert len(self.get_context_variable('monkeys')) == 2
+        assert len(self.get_context_variable('monkeys')) == Monkey.query.count()
+        self.assert_template_used('monkey_list.html')
 
 
 class TestMonkeyPost(ViewTestCase):
