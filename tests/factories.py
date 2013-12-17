@@ -12,3 +12,4 @@ class MonkeyFactory(SQLAlchemyModelFactory):
     email = factory.Sequence(
         lambda n: u'sampo{0}@example.com'.format(n)
     )
+    age = 28

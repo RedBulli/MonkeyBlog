@@ -5,6 +5,7 @@
 {% block content %}
 Name: {{monkey.name}}<br/>
 Email: {{monkey.email}}<br/>
+Age: {{monkey.age}}
 
 <form method="POST" action="{{url_for('MonkeysView:destroy', id=monkey.id)}}">
   <input type="submit" value="Delete me!"></input>

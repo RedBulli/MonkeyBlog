@@ -6,6 +6,7 @@
 <form method="POST" action="{{url_for('MonkeysView:post')}}">
   <div>{{ form.name.label }}: {{ form.name() }}</div>
   <div>{{ form.email.label }}: {{ form.email() }}</div>
+  <div>{{ form.age.label }}: {{ form.age() }}</div>
   <input type="submit" value="Submit"></input>
 </form>
 {% endblock %}

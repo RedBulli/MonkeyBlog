@@ -48,7 +48,7 @@ class TestMonkeyPost(ViewTestCase):
         prev_monkey_count = Monkey.query.count()
         response = self.client.post(
             url_for('MonkeysView:post'),
-            data={'name': 'Sampo', 'email': 'sampo@kk.fi'}
+            data={'name': 'Sampo', 'email': 'sampo@kk.fi', 'age': 28}
         )
         assert Monkey.query.count() == prev_monkey_count + 1
         monkey = Monkey.query.filter(Monkey.email == 'sampo@kk.fi').first()
