@@ -1,4 +1,4 @@
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for
 from flask.ext.classy import FlaskView
 
 from MonkeyBlog.models.monkey import Monkey
@@ -7,7 +7,11 @@ from MonkeyBlog.extensions import db
 
 
 class MonkeysView(FlaskView):
-    def get(self):
+    def get(self, id):
+        monkey = Monkey.query.get(id)
+        return render_template('monkey_view.html', monkey=monkey)
+
+    def index(self):
         monkeys = [Monkey('Sampo', 'sampo@ff.fi'), Monkey('Toinen', 'sampo2@kk.fi')]
         return render_template('monkey_list.html', monkeys=monkeys)
 
@@ -23,5 +27,4 @@ class MonkeysView(FlaskView):
             form.populate_obj(monkey)
             db.session.add(monkey)
             db.session.commit()
-            print 'khly'
-            return render_template('monkey_view.html', monkey=monkey)
+            return redirect(url_for('MonkeysView:get', id=monkey.id))
