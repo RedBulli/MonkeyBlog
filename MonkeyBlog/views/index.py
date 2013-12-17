@@ -3,7 +3,7 @@ from flask.ext.classy import FlaskView
 
 
 class IndexView(FlaskView):
-    route_base= '/'
+    route_base = '/'
 
     def index(self):
         return redirect('/monkeys/')

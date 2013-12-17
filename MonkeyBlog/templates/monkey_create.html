@@ -1,1 +1,11 @@
-monkey_create.html
+{% extends "base.html" %}
+
+{% block title %}Create a new monkey{% endblock %}
+
+{% block content %}
+<form method="POST" action="{{url_for('MonkeysView:post')}}">
+  <div>{{ form.name.label }}: {{ form.name() }}</div>
+  <div>{{ form.email.label }}: {{ form.email() }}</div>
+  <input type="submit" value="Submit"></input>
+</form>
+{% endblock %}

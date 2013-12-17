@@ -1,1 +1,12 @@
-monkey_view.html
+{% extends "base.html" %}
+
+{% block title %}{{monkey.name}}{% endblock %}
+
+{% block content %}
+Name: {{monkey.name}}<br/>
+Email: {{monkey.email}}<br/>
+
+<form method="POST" action="{{url_for('MonkeysView:destroy', id=monkey.id)}}">
+  <input type="submit" value="Delete me!"></input>
+</form>
+{% endblock %}

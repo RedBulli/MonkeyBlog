@@ -25,6 +25,14 @@ class TestMonkeyListing(ViewTestCase):
         self.assert_template_used('monkey_list.html')
 
 
+class TestMonkeyFormView(ViewTestCase):
+    render_templates = False
+
+    def test_monkey_form_url(self):
+        self.client.get(url_for('MonkeysView:create'))
+        self.assert_template_used('monkey_create.html')
+
+
 class TestMonkeyPost(ViewTestCase):
     render_templates = False
 
@@ -56,8 +64,8 @@ class TestMonkeyDelete(ViewTestCase):
     def test_monkey_deletion(self):
         monkey = MonkeyFactory()
         prev_monkey_count = Monkey.query.count()
-        response = self.client.delete(
-            url_for('MonkeysView:delete', id=monkey.id)
+        response = self.client.post(
+            url_for('MonkeysView:destroy', id=monkey.id)
         )
         assert Monkey.query.count() == prev_monkey_count - 1
         self.assert_redirects(response, url_for('MonkeysView:index'))

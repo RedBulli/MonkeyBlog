@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for
-from flask.ext.classy import FlaskView
+from flask.ext.classy import FlaskView, route
 
 from MonkeyBlog.models.monkey import Monkey
 from MonkeyBlog.forms.monkey_form import MonkeyForm
@@ -15,6 +15,10 @@ class MonkeysView(FlaskView):
         monkeys = Monkey.query.all()
         return render_template('monkey_list.html', monkeys=monkeys)
 
+    def create(self):
+        form = MonkeyForm()
+        return render_template('monkey_create.html', form=form)
+
     def post(self):
         if not request.form:
             form = MonkeyForm()
@@ -29,7 +33,8 @@ class MonkeysView(FlaskView):
             db.session.commit()
             return redirect(url_for('MonkeysView:get', id=monkey.id))
 
-    def delete(self, id):
+    @route('/monkeys/<id>', methods=['POST'])
+    def destroy(self, id):
         monkey = Monkey.query.get(id)
         db.session.delete(monkey)
         db.session.commit()

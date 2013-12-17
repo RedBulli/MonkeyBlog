@@ -28,7 +28,11 @@ def make_shell_context():
 @manager.command
 def syncdb():
     """Synchronize the models with the database."""
-    os.system('alembic upgrade head')
+    app = Application()
+    with app.app_context():
+        db.drop_all()
+        db.create_all()
+    #os.system('alembic upgrade head')
 
 
 @manager.command

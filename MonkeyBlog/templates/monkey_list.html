@@ -1,7 +1,9 @@
-{% extends "index.html" %}
+{% extends "base.html" %}
 {% block title %}List of monkeys{% endblock %}
 {% block content %}
+<a href="{{ url_for('MonkeysView:create') }}">Create a new monkey</a>
+
 {% for monkey in monkeys %}
-  <li><a href="{{ monkey.href }}">{{ monkey.name }}</a></li>
+  <li><a href="{{ url_for('MonkeysView:get', id=monkey.id) }}">{{ monkey.name }}</a></li>
 {% endfor %}
 {% endblock %}
