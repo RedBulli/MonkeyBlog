@@ -44,4 +44,21 @@ class TestMonkeyPost(ViewTestCase):
         )
         assert Monkey.query.count() == prev_monkey_count + 1
         monkey = Monkey.query.filter(Monkey.email == 'sampo@kk.fi').first()
-        self.assert_redirects(response, url_for('MonkeysView:get', id=monkey.id))
+        self.assert_redirects(
+            response, 
+            url_for('MonkeysView:get', id=monkey.id)
+        )
+
+
+class TestMonkeyDelete(ViewTestCase):
+    render_templates = False
+
+    def test_monkey_deletion(self):
+        MonkeyFactory()
+        prev_monkey_count = Monkey.query.count()
+        monkey = Monkey.query.first()
+        response = self.client.delete(
+            url_for('MonkeysView:delete', id=monkey.id)
+        )
+        assert Monkey.query.count() == prev_monkey_count - 1
+        self.assert_redirects(response, url_for('MonkeysView:index'))

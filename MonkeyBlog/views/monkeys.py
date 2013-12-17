@@ -28,3 +28,9 @@ class MonkeysView(FlaskView):
             db.session.add(monkey)
             db.session.commit()
             return redirect(url_for('MonkeysView:get', id=monkey.id))
+
+    def delete(self, id):
+        monkey = Monkey.query.get(id)
+        db.session.delete(monkey)
+        db.session.commit()
+        return redirect(url_for('MonkeysView:index'))
