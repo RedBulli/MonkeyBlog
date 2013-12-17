@@ -1,4 +1,4 @@
-from flask.ext.test import TestCase
+from flask.ext.test import TestCase, ApplicationSetup, ViewSetup, DatabaseSetup
 
 from MonkeyBlog import Application
 
@@ -18,3 +18,7 @@ class BaseTestCase(TestCase):
 
     def before_method_teardown(self, method):
         self.destroy_app()
+
+
+class ViewTestCase(BaseTestCase):
+    setup_delegators = [ApplicationSetup(), ViewSetup(), DatabaseSetup()]

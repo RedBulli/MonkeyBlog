@@ -10,7 +10,7 @@ monkey_friends = db.Table('monkey_friends',
 class Monkey(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
+    name = db.Column(db.String(50), nullable=False)
     email = db.Column(EmailType(), nullable=False, unique=True)
 
     friends = db.relationship('Monkey', 
@@ -22,6 +22,6 @@ class Monkey(db.Model):
     best_friend_id = db.Column(db.Integer, db.ForeignKey('monkey.id'))
     best_friend = db.relationship('Monkey', uselist=False)
 
-    def __init__(self, name, email):
+    def __init__(self, name=None, email=None):
         self.name = name
         self.email = email
