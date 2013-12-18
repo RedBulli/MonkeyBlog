@@ -3,9 +3,12 @@
 {% block title %}{{monkey.name}}{% endblock %}
 
 {% block content %}
-Name: {{monkey.name}}<br/>
-Email: {{monkey.email}}<br/>
-Age: {{monkey.age}}
+<form method="POST" action="{{url_for('MonkeysView:update', id=monkey.id)}}">
+  <div>{{ form.name.label }}: {{ form.name() }}</div>
+  <div>{{ form.email.label }}: {{ form.email() }}</div>
+  <div>{{ form.age.label }}: {{ form.age() }}</div>
+  <input type="submit" value="Submit"></input>
+</form>
 
 <form method="POST" action="{{url_for('MonkeysView:destroy', id=monkey.id)}}">
   <input type="submit" value="Delete me!"></input>

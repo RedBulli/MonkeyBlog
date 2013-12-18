@@ -9,7 +9,8 @@ from MonkeyBlog.extensions import db
 class MonkeysView(FlaskView):
     def get(self, id):
         monkey = Monkey.query.get(id)
-        return render_template('monkey_view.html', monkey=monkey)
+        form = MonkeyForm(obj=monkey)
+        return render_template('monkey_view.html', monkey=monkey, form=form)
 
     def index(self):
         monkeys = Monkey.query.all()
@@ -33,7 +34,18 @@ class MonkeysView(FlaskView):
             db.session.commit()
             return redirect(url_for('MonkeysView:get', id=monkey.id))
 
-    @route('/monkeys/<id>', methods=['POST'])
+    @route('<id>', methods=['POST'])
+    def update(self, id):
+        monkey = Monkey.query.get(id)
+        form = MonkeyForm(request.form, monkey)
+        if not form.validate():
+            return render_template('monkey_view.html', form=form, monkey=monkey)
+        else:
+            form.populate_obj(monkey)
+            db.session.commit()
+            return render_template('monkey_view.html', form=form, monkey=monkey)
+
+    @route('<id>/delete', methods=['POST'])
     def destroy(self, id):
         monkey = Monkey.query.get(id)
         db.session.delete(monkey)

@@ -13,6 +13,7 @@ class TestMonkeyView(ViewTestCase):
         monkey = MonkeyFactory()
         self.client.get(url_for('MonkeysView:get', id=monkey.id))
         assert self.get_context_variable('monkey').name == 'Sampo'
+        self.assert_template_used('monkey_view.html')
 
 class TestMonkeyListing(ViewTestCase):
     render_templates = False
@@ -56,6 +57,29 @@ class TestMonkeyPost(ViewTestCase):
             response, 
             url_for('MonkeysView:get', id=monkey.id)
         )
+
+
+class TestMonkeyUpdate(ViewTestCase):
+    render_templates = False
+
+    def test_monkey_update(self):
+        monkey = MonkeyFactory()
+        self.client.post(
+            url_for('MonkeysView:update', id=monkey.id),
+            data={'name': monkey.name, 'email': monkey.email, 'age': 30}
+        )
+        assert Monkey.query.get(monkey.id).age == 30
+        self.assert_template_used('monkey_view.html')
+
+    def test_monkey_update_failure(self):
+        monkey = MonkeyFactory()
+        self.client.post(
+            url_for('MonkeysView:update', id=monkey.id),
+            data={'name': monkey.name, 'email': monkey.email, 'age': -1}
+        )
+        assert Monkey.query.get(monkey.id).age == 28
+        assert len(self.get_context_variable('form').errors) > 0
+        self.assert_template_used('monkey_view.html')
 
 
 class TestMonkeyDelete(ViewTestCase):
