@@ -4,10 +4,8 @@
 
 {% block content %}
 <form method="POST" action="{{url_for('MonkeysView:update', id=monkey.id)}}">
-  <div>{{ form.name.label }}: {{ form.name() }}</div>
-  <div>{{ form.email.label }}: {{ form.email() }}</div>
-  <div>{{ form.age.label }}: {{ form.age() }}</div>
-  <input type="submit" value="Submit"></input>
+  {% include "monkey_form_fields.html" %}
+  <input type="submit" value="Update monkey information"></input>
 </form>
 
 <form method="POST" action="{{url_for('MonkeysView:destroy', id=monkey.id)}}">
