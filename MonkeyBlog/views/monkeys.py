@@ -6,10 +6,15 @@ from MonkeyBlog.forms.monkey_form import MonkeyForm
 from MonkeyBlog.extensions import db
 
 
+def set_form_queries(form, monkey_id=None):
+    form.friends.query = Monkey.query.filter(Monkey.id != monkey_id)
+
+
 class MonkeysView(FlaskView):
     def get(self, id):
         monkey = Monkey.query.get(id)
         form = MonkeyForm(obj=monkey)
+        set_form_queries(form, monkey.id)
         return render_template('monkey_view.html', monkey=monkey, form=form)
 
     def index(self):
@@ -18,6 +23,7 @@ class MonkeysView(FlaskView):
 
     def create(self):
         form = MonkeyForm()
+        set_form_queries(form)
         return render_template('monkey_create.html', form=form)
 
     def post(self):
@@ -25,6 +31,7 @@ class MonkeysView(FlaskView):
             form = MonkeyForm()
         else:
             form = MonkeyForm(request.form)
+        set_form_queries(form)
         if not form.validate():
             return render_template('monkey_create.html', form=form)
         else:
@@ -38,12 +45,11 @@ class MonkeysView(FlaskView):
     def update(self, id):
         monkey = Monkey.query.get(id)
         form = MonkeyForm(request.form, monkey)
-        if not form.validate():
-            return render_template('monkey_view.html', form=form, monkey=monkey)
-        else:
+        set_form_queries(form, monkey.id)
+        if form.validate():
             form.populate_obj(monkey)
             db.session.commit()
-            return render_template('monkey_view.html', form=form, monkey=monkey)
+        return render_template('monkey_view.html', form=form, monkey=monkey)
 
     @route('<id>/delete', methods=['POST'])
     def destroy(self, id):
