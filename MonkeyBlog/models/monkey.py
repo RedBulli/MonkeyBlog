@@ -17,7 +17,8 @@ class Monkey(db.Model):
     friends = db.relationship('Monkey', 
         secondary=monkey_friends,
         primaryjoin=id==monkey_friends.c.monkey_id,
-        secondaryjoin=id==monkey_friends.c.friend_id
+        secondaryjoin=id==monkey_friends.c.friend_id,
+        backref='friended_by'
     )
 
     best_friend_id = db.Column(db.Integer, db.ForeignKey('monkey.id'))

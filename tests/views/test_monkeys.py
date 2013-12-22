@@ -4,6 +4,7 @@ from tests import ViewTestCase
 from tests.factories import MonkeyFactory
 
 from MonkeyBlog.models.monkey import Monkey
+from MonkeyBlog.extensions import db
 
 
 class TestMonkeyView(ViewTestCase):
@@ -46,10 +47,16 @@ class TestMonkeyPost(ViewTestCase):
         self.assert_template_used('monkey_create.html')
 
     def test_monkey_creation(self):
+        friend = MonkeyFactory()
         prev_monkey_count = Monkey.query.count()
         response = self.client.post(
             url_for('MonkeysView:post'),
-            data={'name': 'Sampo', 'email': 'sampo@kk.fi', 'age': 28}
+            data={
+                'name': 'Sampo', 
+                'email': 'sampo@kk.fi', 
+                'age': 28, 
+                'friends': friend.id
+            }
         )
         assert Monkey.query.count() == prev_monkey_count + 1
         monkey = Monkey.query.filter(Monkey.email == 'sampo@kk.fi').first()
@@ -86,7 +93,10 @@ class TestMonkeyDelete(ViewTestCase):
     render_templates = False
 
     def test_monkey_deletion(self):
+        friend = MonkeyFactory()
         monkey = MonkeyFactory()
+        friend.friends.append(monkey)
+        db.session.commit()
         prev_monkey_count = Monkey.query.count()
         response = self.client.post(
             url_for('MonkeysView:destroy', id=monkey.id)
