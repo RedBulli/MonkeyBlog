@@ -7,7 +7,7 @@
     <title>{% block title %}{% endblock %} - Monkeys</title>
   </head>
   <body>
-    <h1>Monkeys</h1>
+    <h1><a href="{{url_for('MonkeysView:index')}}">Monkeys</a></h1>
     <h2>{{ self.title() }}</h2>
     <div id="content">{% block content %}{% endblock %}</div>
   </body>
