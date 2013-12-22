@@ -1,13 +1,10 @@
 from wtforms import Form
 from wtforms.fields import StringField, IntegerField
 from wtforms.validators import Email, Length, DataRequired, NumberRange
-from wtforms.ext.sqlalchemy.fields import QuerySelectMultipleField
-
-from MonkeyBlog.models.monkey import Monkey
-
-
-def selectable_friends():
-    return Monkey.query.order_by('name')
+from wtforms.ext.sqlalchemy.fields import (
+    QuerySelectMultipleField, 
+    QuerySelectField
+)
 
 
 class MonkeyForm(Form):
@@ -17,5 +14,8 @@ class MonkeyForm(Form):
     friends = QuerySelectMultipleField(
         u'Friends',
         get_label='name',
-        query_factory=selectable_friends, 
+        allow_blank=True)
+    best_friend = QuerySelectField(
+        u'Best Friend',
+        get_label='name',
         allow_blank=True)

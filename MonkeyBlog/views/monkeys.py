@@ -12,6 +12,7 @@ class MonkeysView(FlaskView):
         if (monkey != None):
             id = monkey.id
         form.friends.query = Monkey.query.filter(Monkey.id != id)
+        form.best_friend.query = Monkey.query.filter(Monkey.id != id)
 
     def _get_form(self, monkey=None):
         form = MonkeyForm(request.form, monkey)
