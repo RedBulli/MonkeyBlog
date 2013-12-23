@@ -16,15 +16,57 @@ class TestMonkeyView(ViewTestCase):
         assert self.get_context_variable('monkey').name == 'Sampo'
         self.assert_template_used('monkey_view.html')
 
-class TestMonkeyListing(ViewTestCase):
+
+class TestMonkeyListings(ViewTestCase):
     render_templates = False
 
+    def setup_method(self, method):
+        super(TestMonkeyListings, self).setup_method(method)
+        MonkeyFactory(name='Sampo')
+        MonkeyFactory(name='Aapo')
+        MonkeyFactory(name='Heikki')
+
     def test_monkey_list_values(self):
-        MonkeyFactory()
-        MonkeyFactory()
         self.client.get(url_for('MonkeysView:index'))
         assert len(self.get_context_variable('monkeys')) == Monkey.query.count()
         self.assert_template_used('monkey_list.html')
+
+    def test_monkey_default_ordering_by_name_asc(self):
+        self.client.get(url_for('MonkeysView:index'))
+        assert self.get_context_variable('monkeys')[0].name == 'Aapo'
+        assert self.get_context_variable('monkeys')[1].name == 'Heikki'
+        assert self.get_context_variable('monkeys')[2].name == 'Sampo'
+
+    def test_monkey_ordering_by_name_desc(self):
+        self.client.get(url_for('MonkeysView:index', order_by='name', direction='desc'))
+        assert self.get_context_variable('monkeys')[0].name == 'Sampo'
+        assert self.get_context_variable('monkeys')[1].name == 'Heikki'
+        assert self.get_context_variable('monkeys')[2].name == 'Aapo'
+
+class TestMonkeyListingsOrderingByFriends(ViewTestCase):
+    render_templates = False
+
+    def setup_method(self, method):
+        super(TestMonkeyListingsOrderingByFriends, self).setup_method(method)
+        self.zero_friends = MonkeyFactory(name='Sampo')
+        self.two_friends = MonkeyFactory(name='Aapo')
+        self.one_friend = MonkeyFactory(name='Heikki')
+        self.one_friend.friends.append(self.two_friends)
+        self.two_friends.friends.append(self.one_friend)
+        self.two_friends.friends.append(self.zero_friends)
+        db.session.commit()
+
+    def test_monkey_ordering_by_friend_count_desc(self):
+        self.client.get(url_for('MonkeysView:index', order_by='friends', direction='desc'))
+        assert self.get_context_variable('monkeys')[0].id == self.two_friends.id
+        assert self.get_context_variable('monkeys')[1].id == self.one_friend.id
+        assert self.get_context_variable('monkeys')[2].id == self.zero_friends.id
+
+    def test_monkey_ordering_by_friend_count_asc(self):
+        self.client.get(url_for('MonkeysView:index', order_by='friends'))
+        assert self.get_context_variable('monkeys')[0].id == self.zero_friends.id
+        assert self.get_context_variable('monkeys')[1].id == self.one_friend.id
+        assert self.get_context_variable('monkeys')[2].id == self.two_friends.id
 
 
 class TestMonkeyFormView(ViewTestCase):

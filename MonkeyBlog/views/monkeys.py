@@ -1,7 +1,9 @@
 from flask import render_template, request, redirect, url_for
 from flask.ext.classy import FlaskView, route
 
-from MonkeyBlog.models.monkey import Monkey
+from sqlalchemy import func
+
+from MonkeyBlog.models.monkey import Monkey, monkey_friends
 from MonkeyBlog.forms.monkey_form import MonkeyForm
 from MonkeyBlog.extensions import db
 
@@ -41,7 +43,26 @@ class MonkeysView(FlaskView):
         return render_template('monkey_view.html', monkey=monkey, form=form)
 
     def index(self):
-        monkeys = Monkey.query.all()
+        order_by = request.args.get('order_by')
+        direction = request.args.get('direction')
+        if (direction == None):
+            direction = 'ASC'
+        if (order_by == 'friends'):
+            monkey_tuples = \
+                db.session.query(Monkey, 
+                    func.count(monkey_friends.c.monkey_id).label('friend_count')
+                ).outerjoin(monkey_friends, monkey_friends.c.monkey_id == Monkey.id)\
+                .group_by(Monkey).order_by('friend_count ' + direction).all()
+            monkeys = []
+            for row in monkey_tuples:
+                row[0].friend_count = row[1]
+                monkeys.append(row[0])
+        else:
+            if (order_by == None):
+                order_by = 'name'
+            order_by = 'name'
+            monkeys = Monkey.query.order_by(order_by + ' ' + direction).all()
+
         return render_template('monkey_list.html', monkeys=monkeys)
 
     def create(self):
