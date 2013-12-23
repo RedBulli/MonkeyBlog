@@ -38,6 +38,26 @@ class MonkeysView(FlaskView):
         db.session.delete(monkey)
         db.session.commit()
 
+    def _get_monkeys_ordered_by_friends_count(self, direction):
+        monkey_tuples = \
+            db.session.query(Monkey, 
+                func.count(monkey_friends.c.monkey_id).label('friend_count')
+            ).outerjoin(monkey_friends, monkey_friends.c.monkey_id == Monkey.id)\
+            .group_by(Monkey).order_by('friend_count ' + direction).all()
+        monkeys = []
+        for row in monkey_tuples:
+            row[0].friend_count = row[1]
+            monkeys.append(row[0])
+        return monkeys
+
+    def _get_monkeys_ordered_by_best_friend_name(self, direction):
+        best_friend_table = aliased(Monkey)
+        return Monkey.query \
+            .outerjoin(
+                best_friend_table, 
+                best_friend_table.id == Monkey.best_friend_id
+            ).order_by('monkey_1.name ' + direction).all()
+
     def get(self, id):
         monkey = Monkey.query.get(id)
         form = self._get_form(monkey)
@@ -48,26 +68,14 @@ class MonkeysView(FlaskView):
         direction = request.args.get('direction')
         if (direction == None):
             direction = 'ASC'
-        if (order_by == 'friends'):
-            monkey_tuples = \
-                db.session.query(Monkey, 
-                    func.count(monkey_friends.c.monkey_id).label('friend_count')
-                ).outerjoin(monkey_friends, monkey_friends.c.monkey_id == Monkey.id)\
-                .group_by(Monkey).order_by('friend_count ' + direction).all()
-            monkeys = []
-            for row in monkey_tuples:
-                row[0].friend_count = row[1]
-                monkeys.append(row[0])
-        elif (order_by == 'best_friend'):
-            best_friend_table = aliased(Monkey)
-            monkeys = Monkey.query \
-                .outerjoin(
-                    best_friend_table, 
-                    best_friend_table.id == Monkey.best_friend_id
-                ).order_by('monkey_1.name ' + direction)
         else:
-            if (order_by == None):
-                order_by = 'name'
+            direction = 'DESC'
+        if (order_by == 'friends'):
+            monkeys = self._get_monkeys_ordered_by_friends_count(direction)
+        elif (order_by == 'best_friend'):
+            monkeys = self._get_monkeys_ordered_by_best_friend_name(direction)
+        else:
+            order_by = 'name'
             monkeys = Monkey.query.order_by(order_by + ' ' + direction).all()
         return render_template('monkey_list.html', monkeys=monkeys)
 
