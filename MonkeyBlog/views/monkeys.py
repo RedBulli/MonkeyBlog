@@ -2,6 +2,7 @@ from flask import render_template, request, redirect, url_for
 from flask.ext.classy import FlaskView, route
 
 from sqlalchemy import func
+from sqlalchemy.orm import aliased
 
 from MonkeyBlog.models.monkey import Monkey, monkey_friends
 from MonkeyBlog.forms.monkey_form import MonkeyForm
@@ -57,12 +58,17 @@ class MonkeysView(FlaskView):
             for row in monkey_tuples:
                 row[0].friend_count = row[1]
                 monkeys.append(row[0])
+        elif (order_by == 'best_friend'):
+            best_friend_table = aliased(Monkey)
+            monkeys = Monkey.query \
+                .outerjoin(
+                    best_friend_table, 
+                    best_friend_table.id == Monkey.best_friend_id
+                ).order_by('monkey_1.name ' + direction)
         else:
             if (order_by == None):
                 order_by = 'name'
-            order_by = 'name'
             monkeys = Monkey.query.order_by(order_by + ' ' + direction).all()
-
         return render_template('monkey_list.html', monkeys=monkeys)
 
     def create(self):
