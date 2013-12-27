@@ -21,6 +21,7 @@ class Monkey(db.Model):
         backref='friended_by'
     )
 
+    #TODO Best friend has to be a friend
     best_friend_id = db.Column(db.Integer, db.ForeignKey('monkey.id'))
     best_friend = db.relationship('Monkey', uselist=False)
 

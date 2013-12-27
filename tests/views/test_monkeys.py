@@ -38,7 +38,8 @@ class TestMonkeyListings(ViewTestCase):
         assert self.get_context_variable('monkeys')[2].name == 'Sampo'
 
     def test_monkey_ordering_by_name_desc(self):
-        self.client.get(url_for('MonkeysView:index', order_by='name', direction='desc'))
+        self.client.get(
+            url_for('MonkeysView:index', order_by='name', direction='desc'))
         assert self.get_context_variable('monkeys')[0].name == 'Sampo'
         assert self.get_context_variable('monkeys')[1].name == 'Heikki'
         assert self.get_context_variable('monkeys')[2].name == 'Aapo'
@@ -58,21 +59,22 @@ class TestMonkeyListingsOrderingByFriends(ViewTestCase):
         db.session.commit()
 
     def test_monkey_ordering_by_friend_count_desc(self):
-        self.client.get(url_for('MonkeysView:index', order_by='friends', direction='desc'))
-        assert self.get_context_variable('monkeys')[0].id == self.two_friends.id
-        assert self.get_context_variable('monkeys')[1].id == self.one_friend.id
-        assert self.get_context_variable('monkeys')[2].id == self.zero_friends.id
+        self.client.get(
+            url_for('MonkeysView:index', order_by='friends', direction='desc'))
+        assert self.get_context_variable('monkeys')[0] == self.two_friends
+        assert self.get_context_variable('monkeys')[1] == self.one_friend
+        assert self.get_context_variable('monkeys')[2] == self.zero_friends
 
     def test_monkey_ordering_by_friend_count_asc(self):
         self.client.get(url_for('MonkeysView:index', order_by='friends'))
-        assert self.get_context_variable('monkeys')[0].id == self.zero_friends.id
-        assert self.get_context_variable('monkeys')[1].id == self.one_friend.id
-        assert self.get_context_variable('monkeys')[2].id == self.two_friends.id
+        assert self.get_context_variable('monkeys')[0] == self.zero_friends
+        assert self.get_context_variable('monkeys')[1] == self.one_friend
+        assert self.get_context_variable('monkeys')[2] == self.two_friends
 
 
 class TestMonkeyListingsOrderingByBestFriendName(ViewTestCase):
     render_templates = False
-    #best friend has to be a friend
+
     def _make_friend_and_best_friend(self, monkey, friend):
         monkey.friends.append(friend)
         db.session.commit()
@@ -80,7 +82,9 @@ class TestMonkeyListingsOrderingByBestFriendName(ViewTestCase):
         db.session.commit()
 
     def setup_method(self, method):
-        super(TestMonkeyListingsOrderingByBestFriendName, self).setup_method(method)
+        super(TestMonkeyListingsOrderingByBestFriendName, self).setup_method(
+            method)
+        self.no_best_friend = MonkeyFactory()
         self.sampo_jussi = MonkeyFactory(name='Sampo')
         self.aapo_heikki = MonkeyFactory(name='Aapo')
         self.heikki_aapo = MonkeyFactory(name='Heikki')
@@ -91,18 +95,22 @@ class TestMonkeyListingsOrderingByBestFriendName(ViewTestCase):
         self._make_friend_and_best_friend(self.aapo_heikki, self.heikki_aapo)
 
     def test_monkey_ordering_by_friend_count_desc(self):
-        self.client.get(url_for('MonkeysView:index', order_by='best_friend', direction='desc'))
-        assert self.get_context_variable('monkeys')[0].id == self.jussi_sampo.id
-        assert self.get_context_variable('monkeys')[1].id == self.sampo_jussi.id
-        assert self.get_context_variable('monkeys')[2].id == self.aapo_heikki.id
-        assert self.get_context_variable('monkeys')[3].id == self.heikki_aapo.id
+        self.client.get(
+            url_for(
+                'MonkeysView:index', order_by='best_friend', direction='desc'))
+        assert self.get_context_variable('monkeys')[0] == self.jussi_sampo
+        assert self.get_context_variable('monkeys')[1] == self.sampo_jussi
+        assert self.get_context_variable('monkeys')[2] == self.aapo_heikki
+        assert self.get_context_variable('monkeys')[3] == self.heikki_aapo
+        assert self.get_context_variable('monkeys')[4] == self.no_best_friend
 
     def test_monkey_ordering_by_friend_count_asc(self):
         self.client.get(url_for('MonkeysView:index', order_by='best_friend'))
-        assert self.get_context_variable('monkeys')[0].id == self.heikki_aapo.id
-        assert self.get_context_variable('monkeys')[1].id == self.aapo_heikki.id
-        assert self.get_context_variable('monkeys')[2].id == self.sampo_jussi.id
-        assert self.get_context_variable('monkeys')[3].id == self.jussi_sampo.id
+        assert self.get_context_variable('monkeys')[0] == self.heikki_aapo
+        assert self.get_context_variable('monkeys')[1] == self.aapo_heikki
+        assert self.get_context_variable('monkeys')[2] == self.sampo_jussi
+        assert self.get_context_variable('monkeys')[3] == self.jussi_sampo
+        assert self.get_context_variable('monkeys')[4] == self.no_best_friend
 
 
 class TestMonkeyFormView(ViewTestCase):
