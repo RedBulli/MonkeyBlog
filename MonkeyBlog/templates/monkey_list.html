@@ -5,15 +5,21 @@
     <a href="{{ url_for('MonkeysView:index', order_by=column, direction='DESC') }}">
       {{text}}
     </a>
+    <span class="glyphicon glyphicon-chevron-up"></span>
   {% else %}
-    <a href="{{ url_for('MonkeysView:index', order_by=column) }}">{{text}}</a>
+    <a href="{{ url_for('MonkeysView:index', order_by=column) }}">
+      {{text}}
+    </a>
+  {% endif %}
+  {% if order_by == column and direction == "DESC" %}
+    <span class="glyphicon glyphicon-chevron-down"></span>
   {% endif %}
 {% endmacro %}
 
 {% block title %}List of monkeys{% endblock %}
 {% block content %}
-<a href="{{ url_for('MonkeysView:create') }}">Create a new monkey</a>
-<table>
+<a href="{{ url_for('MonkeysView:create') }}"><span class="glyphicon glyphicon-pencil"></span> Create a new monkey</a>
+<table class="table table-striped">
   <thead>
     <tr>
       <th>{{ sort_link('name', 'Monkey name') }}</th>
