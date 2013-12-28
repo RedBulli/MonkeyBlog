@@ -100,7 +100,7 @@ class MonkeysView(FlaskView):
     @route('<id>', methods=['POST'])
     def update(self, id):
         monkey = Monkey.query.get(id)
-        form = self._get_form()
+        form = self._get_form(monkey)
         if form.validate():
             self._update_monkey(monkey, form)
         return render_template('monkey_view.html', form=form, monkey=monkey)
