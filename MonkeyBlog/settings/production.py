@@ -30,7 +30,7 @@ except KeyError:
 # debug mode the debugger will kick in when an unhandled exception ocurrs and
 # the integrated server will automatically reload the application if changes in
 # the code are detected.
-DEBUG = False
+DEBUG = True
 SERVER_NAME = os.environ.get('SERVER_NAME')
 
 
