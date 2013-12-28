@@ -7,4 +7,3 @@ SQLAlchemy-Utils==0.20.0
 git+git://github.com/wtforms/wtforms.git@wtforms2
 psycopg2==2.5.1
 gunicorn==18.0
-newrelic==2.4.0.4
