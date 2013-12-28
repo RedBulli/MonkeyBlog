@@ -3,12 +3,19 @@
 {% block title %}{{monkey.name}}{% endblock %}
 
 {% block content %}
+
 <form method="POST" action="{{url_for('MonkeysView:update', id=monkey.id)}}">
   {% include "monkey_form_fields.html" %}
-  <input type="submit" value="Update monkey information"></input>
+  <div class="col-sm-offset-2 col-sm-10">
+  <input type="submit" value="Update monkey information" class="btn btn-primary"></input>
+  </div>
 </form>
 
 <form method="POST" action="{{url_for('MonkeysView:destroy', id=monkey.id)}}">
-  <input type="submit" value="Delete me!"></input>
+  <div class="col-sm-offset-2 col-sm-10">
+
+  <input type="submit" value="Delete me!" class="btn btn-danger"></input>
+  </div>
 </form>
+
 {% endblock %}
