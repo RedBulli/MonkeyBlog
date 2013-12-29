@@ -31,9 +31,8 @@ class Monkey(db.Model):
         self.age = age
 
     def __repr__(self):
-        return '<{cls} id={id}, name={name}, best_friend={bf_name}>'.format(
+        return '<{cls} id={id}, name={name}>'.format(
             id=self.id,
             cls=self.__class__.__name__,
-            name=self.name,
-            bf_name=self.best_friend.name
+            name=self.name
         )

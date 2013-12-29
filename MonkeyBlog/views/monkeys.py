@@ -9,36 +9,16 @@ from MonkeyBlog.forms.monkey_form import MonkeyForm
 from MonkeyBlog.extensions import db
 
 
-class MonkeysView(FlaskView):
-    def _set_form_queries(self, form, monkey=None):
-        id = None
-        if (monkey != None):
-            id = monkey.id
-        form.friends.query = Monkey.query.filter(Monkey.id != id)
-        form.best_friend.query = Monkey.query.filter(Monkey.id != id)
+class MonkeyQueries:
+    def get_monkeys(self, order_by, direction):
+        if (order_by == 'friends'):
+            return self.get_monkeys_ordered_by_friends_count(direction)
+        elif (order_by == 'best_friend'):
+            return self.get_monkeys_ordered_by_best_friend_name(direction)
+        else:
+            return self.get_monkeys_ordered_by_name(direction)
 
-    def _get_form(self, monkey=None):
-        form = MonkeyForm(request.form, monkey)
-        self._set_form_queries(form, monkey)
-        return form
-
-    def _create_monkey(self, form):
-        monkey = Monkey()
-        form.populate_obj(monkey)
-        db.session.add(monkey)
-        db.session.commit()
-        return monkey
-
-    def _update_monkey(self, monkey, form):
-        form.populate_obj(monkey)
-        db.session.commit()
-
-    def _delete_monkey(self, id):
-        monkey = Monkey.query.get(id)
-        db.session.delete(monkey)
-        db.session.commit()
-
-    def _get_monkeys_ordered_by_friends_count(self, direction):
+    def get_monkeys_ordered_by_friends_count(self, direction):
         monkey_tuples = \
             db.session.query(Monkey, 
                 func.count(monkey_friends.c.monkey_id).label('friend_count')
@@ -51,7 +31,7 @@ class MonkeysView(FlaskView):
             monkeys.append(row[0])
         return monkeys
 
-    def _get_monkeys_ordered_by_best_friend_name(self, direction):
+    def get_monkeys_ordered_by_best_friend_name(self, direction):
         best_friend_table = aliased(Monkey)
         return Monkey.query \
             .outerjoin(
@@ -59,25 +39,46 @@ class MonkeysView(FlaskView):
                 best_friend_table.best_friend_id == Monkey.id
             ).order_by('monkey_1.name ' + direction + ' NULLS LAST')
 
-    def get(self, id):
-        monkey = Monkey.query.get(id)
-        form = self._get_form(monkey)
-        return render_template('monkey_view.html', monkey=monkey, form=form)
+    def get_monkeys_ordered_by_name(self, direction):
+        return Monkey.query.order_by('name ' + direction).all()
 
-    def index(self):
-        order_by = request.args.get('order_by')
+
+class MonkeyViewHelper:
+    def create_monkey(self, form):
+        monkey = Monkey()
+        form.populate_obj(monkey)
+        db.session.add(monkey)
+        db.session.commit()
+        return monkey
+
+    def update_monkey(self, monkey, form):
+        form.populate_obj(monkey)
+        db.session.commit()
+
+    def delete_monkey(self, id):
+        monkey = Monkey.query.get(id)
+        db.session.delete(monkey)
+        db.session.commit()
+
+    def get_direction_param(self, request):
         direction = request.args.get('direction')
         if (direction == None):
-            direction = 'ASC'
+            return 'ASC'
         else:
-            direction = 'DESC'
-        if (order_by == 'friends'):
-            monkeys = self._get_monkeys_ordered_by_friends_count(direction)
-        elif (order_by == 'best_friend'):
-            monkeys = self._get_monkeys_ordered_by_best_friend_name(direction)
-        else:
+            return 'DESC'
+
+    def get_order_by_param(self, request):
+        order_by = request.args.get('order_by')
+        if (order_by != 'friends' and order_by != 'best_friend'):
             order_by = 'name'
-            monkeys = Monkey.query.order_by(order_by + ' ' + direction).all()
+        return order_by
+
+
+class MonkeysView(FlaskView):
+    def index(self):
+        order_by = MonkeyViewHelper().get_order_by_param(request)
+        direction = MonkeyViewHelper().get_direction_param(request)
+        monkeys = MonkeyQueries().get_monkeys(order_by, direction)
         return render_template(
             'monkey_list.html', 
             monkeys=monkeys, 
@@ -85,27 +86,32 @@ class MonkeysView(FlaskView):
             direction=direction
         )
 
-    def create(self):
-        form = self._get_form()
-        return render_template('monkey_create.html', form=form)
-
-    def post(self):
-        form = self._get_form()
-        if not form.validate():
-            return render_template('monkey_create.html', form=form)
-        else:
-            monkey = self._create_monkey(form)
-            return redirect(url_for('MonkeysView:get', id=monkey.id))
+    def get(self, id):
+        monkey = Monkey.query.get(id)
+        form = MonkeyForm(request.form, monkey)
+        return render_template('monkey_view.html', monkey=monkey, form=form)
 
     @route('<id>', methods=['POST'])
     def update(self, id):
         monkey = Monkey.query.get(id)
-        form = self._get_form(monkey)
+        form = MonkeyForm(request.form, monkey)
         if form.validate():
-            self._update_monkey(monkey, form)
+            MonkeyViewHelper().update_monkey(monkey, form)
         return render_template('monkey_view.html', form=form, monkey=monkey)
+
+    def create(self):
+        form = MonkeyForm(request.form)
+        return render_template('monkey_create.html', form=form)
+
+    def post(self):
+        form = MonkeyForm(request.form)
+        if not form.validate():
+            return render_template('monkey_create.html', form=form)
+        else:
+            monkey = MonkeyViewHelper().create_monkey(form)
+            return redirect(url_for('MonkeysView:get', id=monkey.id))
 
     @route('<id>/delete', methods=['POST'])
     def destroy(self, id):
-        self._delete_monkey(id)
+        MonkeyViewHelper().delete_monkey(id)
         return redirect(url_for('MonkeysView:index'))
