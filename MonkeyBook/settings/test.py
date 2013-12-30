@@ -8,6 +8,6 @@ TESTING = True
 
 DEBUG_TB_ENABLED = False
 
-SQLALCHEMY_DATABASE_URI = 'postgres://postgres@localhost/monkeyblog_test'
+SQLALCHEMY_DATABASE_URI = 'postgres://postgres@localhost/monkeybook_test'
 
 SERVER_NAME = 'localhost'

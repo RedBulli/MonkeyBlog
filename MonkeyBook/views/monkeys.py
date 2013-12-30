@@ -4,9 +4,9 @@ from flask.ext.classy import FlaskView, route
 from sqlalchemy import func
 from sqlalchemy.orm import aliased
 
-from MonkeyBlog.models.monkey import Monkey, monkey_friends
-from MonkeyBlog.forms.monkey_form import MonkeyForm
-from MonkeyBlog.extensions import db
+from MonkeyBook.models.monkey import Monkey, monkey_friends
+from MonkeyBook.forms.monkey_form import MonkeyForm
+from MonkeyBook.extensions import db
 
 
 class MonkeyQueries:

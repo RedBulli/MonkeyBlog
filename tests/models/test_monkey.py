@@ -4,8 +4,8 @@ from tests.factories import MonkeyFactory
 from pytest import raises
 from sqlalchemy.exc import IntegrityError
 
-from MonkeyBlog.models.monkey import Monkey
-from MonkeyBlog.extensions import db
+from MonkeyBook.models.monkey import Monkey
+from MonkeyBook.extensions import db
 
 
 class TestMonkeyColumnExistences(BaseTestCase):
@@ -49,11 +49,15 @@ class TestMonkeyBestFriend(BaseTestCase):
     def setup_method(self, method):
         super(TestMonkeyBestFriend, self).setup_method(method)
         self.friend = MonkeyFactory(name='Paras ystava')
-        monkey = MonkeyFactory()
-        self.monkey = Monkey.query.get(monkey.id)
+        self.monkey = MonkeyFactory()
+
+    def test_add_best_friend_that_is_not_a_friend(self):
+        self.monkey.best_friend = self.friend
+        with raises(IntegrityError):
+            db.session.commit()
 
     def test_add_best_friend(self):
-        assert self.monkey.best_friend == None
+        self.monkey.friends.append(self.friend)
         self.monkey.best_friend = self.friend
         db.session.commit()
         assert Monkey.query.get(self.monkey.id).best_friend == self.friend

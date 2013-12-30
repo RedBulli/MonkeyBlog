@@ -2,7 +2,7 @@ import factory
 
 from sqlalchemy_model_factory import SQLAlchemyModelFactory
 
-from MonkeyBlog.models.monkey import Monkey
+from MonkeyBook.models.monkey import Monkey
 
 
 class MonkeyFactory(SQLAlchemyModelFactory):

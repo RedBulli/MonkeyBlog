@@ -1,5 +1,5 @@
-from MonkeyBlog import Application
-from MonkeyBlog.extensions import db
+from MonkeyBook import Application
+from MonkeyBook.extensions import db
 
 
 def pytest_configure(config):

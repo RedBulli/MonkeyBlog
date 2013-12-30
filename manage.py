@@ -4,8 +4,8 @@ import os
 
 from flask.ext.script import Manager, Server
 
-from MonkeyBlog import Application, models
-from MonkeyBlog.extensions import db
+from MonkeyBook import Application, models
+from MonkeyBook.extensions import db
 
 
 app = Application()
@@ -32,7 +32,6 @@ def syncdb():
     with app.app_context():
         db.drop_all()
         db.create_all()
-    #os.system('alembic upgrade head')
 
 
 @manager.command

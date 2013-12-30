@@ -1,6 +1,6 @@
 from flask.ext.test import TestCase, ApplicationSetup, ViewSetup, DatabaseSetup
 
-from MonkeyBlog import Application
+from MonkeyBook import Application
 
 
 class BaseTestCase(TestCase):

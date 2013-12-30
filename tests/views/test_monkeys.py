@@ -3,8 +3,8 @@ from flask import url_for
 from tests import ViewTestCase
 from tests.factories import MonkeyFactory
 
-from MonkeyBlog.models.monkey import Monkey
-from MonkeyBlog.extensions import db
+from MonkeyBook.models.monkey import Monkey
+from MonkeyBook.extensions import db
 
 
 class TestMonkeyView(ViewTestCase):
@@ -45,11 +45,11 @@ class TestMonkeyListings(ViewTestCase):
         assert self.get_context_variable('monkeys')[2].name == 'Aapo'
 
 
-class TestMonkeyListingsOrderingByFriends(ViewTestCase):
+class TestMonkeyListingsOrderingByFriendsCount(ViewTestCase):
     render_templates = False
 
     def setup_method(self, method):
-        super(TestMonkeyListingsOrderingByFriends, self).setup_method(method)
+        super(TestMonkeyListingsOrderingByFriendsCount, self).setup_method(method)
         self.zero_friends = MonkeyFactory(name='Sampo')
         self.two_friends = MonkeyFactory(name='Aapo')
         self.one_friend = MonkeyFactory(name='Heikki')

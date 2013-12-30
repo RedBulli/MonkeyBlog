@@ -15,7 +15,7 @@ class Application(Flask):
     def _init_settings(self, environment=None):
         if environment is None:
             environment = os.environ.get('FLASK_ENV', 'development')
-        settings_module = 'MonkeyBlog.settings.' + environment
+        settings_module = 'MonkeyBook.settings.' + environment
         self.config.from_object(settings_module)
 
     def _init_extensions(self):

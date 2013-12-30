@@ -6,7 +6,7 @@ from wtforms.ext.sqlalchemy.fields import (
     QuerySelectField
 )
 
-from MonkeyBlog.models.monkey import Monkey
+from MonkeyBook.models.monkey import Monkey
 
 
 class MonkeyForm(Form):

@@ -1,6 +1,6 @@
 from factory import Factory
 
-from MonkeyBlog.extensions import db
+from MonkeyBook.extensions import db
 
 
 class SQLAlchemyModelFactory(Factory):
