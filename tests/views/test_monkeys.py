@@ -141,7 +141,8 @@ class TestMonkeyPost(ViewTestCase):
                 'name': 'Sampo', 
                 'email': 'sampo@kk.fi', 
                 'age': 28, 
-                'friends': friend.id
+                'friends': friend.id,
+                'best_friend': friend.id
             }
         )
         assert Monkey.query.count() == prev_monkey_count + 1
@@ -150,6 +151,21 @@ class TestMonkeyPost(ViewTestCase):
             response, 
             url_for('MonkeysView:get', id=monkey.id)
         )
+
+    def test_monkey_best_friend_validation(self):
+        friend = MonkeyFactory()
+        prev_monkey_count = Monkey.query.count()
+        response = self.client.post(
+            url_for('MonkeysView:post'),
+            data={
+                'name': 'Sampo', 
+                'email': 'sampo@kk.fi', 
+                'age': 28, 
+                'best_friend': friend.id
+            }
+        )
+        assert len(self.get_context_variable('form').errors) > 0
+        self.assert_template_used('monkey_create.html')
 
 
 class TestMonkeyUpdate(ViewTestCase):
