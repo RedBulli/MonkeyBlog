@@ -5,8 +5,18 @@ from sqlalchemy.schema import ForeignKeyConstraint
 
 
 monkey_friends = db.Table('monkey_friends',
-    db.Column('monkey_id', db.Integer, db.ForeignKey('monkey.id'), primary_key=True),
-    db.Column('friend_id', db.Integer, db.ForeignKey('monkey.id'), primary_key=True)
+    db.Column(
+        'monkey_id',
+        db.Integer,
+        db.ForeignKey('monkey.id', onupdate='CASCADE', ondelete='CASCADE'),
+        primary_key=True
+    ),
+    db.Column(
+        'friend_id',
+        db.Integer,
+        db.ForeignKey('monkey.id', onupdate='CASCADE', ondelete='CASCADE'),
+        primary_key=True
+    )
 )
 
 class Monkey(db.Model):
@@ -15,7 +25,7 @@ class Monkey(db.Model):
             ['id', 'best_friend_id'],
             ['monkey_friends.monkey_id', 'monkey_friends.friend_id'],
             name='fk_best_friend_constraint', use_alter=True,
-            onupdate="CASCADE", ondelete="CASCADE"
+            onupdate='CASCADE', ondelete='CASCADE'
         ),
     )
 
@@ -32,20 +42,30 @@ class Monkey(db.Model):
         foreign_keys=[monkey_friends.c.monkey_id, monkey_friends.c.friend_id]
     )
 
-    best_friend_id = db.Column(db.Integer, db.ForeignKey('monkey.id'))
+    best_friend_id = db.Column(
+        db.Integer, 
+        db.ForeignKey('monkey.id', onupdate='CASCADE', ondelete='SET NULL')
+    )
     best_friend = db.relationship(
         'Monkey',
         uselist=False,
         foreign_keys=best_friend_id,
         remote_side=[id],
         primaryjoin=best_friend_id==id,
-        post_update=True
+        post_update=True,
     )
 
-    def __init__(self, name=None, email=None, age=None):
+    def __init__(self, 
+            name=None, 
+            email=None, 
+            age=None, 
+            friends=[], 
+            best_friend=None):
         self.name = name
         self.email = email
         self.age = age
+        self.friends = friends
+        self.best_friend = best_friend
 
     def __repr__(self):
         return '<{cls} id={id}, name={name}>'.format(

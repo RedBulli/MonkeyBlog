@@ -13,3 +13,5 @@ class MonkeyFactory(SQLAlchemyModelFactory):
         lambda n: u'sampo{0}@example.com'.format(n)
     )
     age = 28
+    friends = []
+    best_friend = None

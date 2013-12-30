@@ -61,3 +61,13 @@ class TestMonkeyBestFriend(BaseTestCase):
         self.monkey.best_friend = self.friend
         db.session.commit()
         assert Monkey.query.get(self.monkey.id).best_friend == self.friend
+
+    def test_delete_friend_with_best_friend(self):
+        self.monkey.friends.append(self.friend)
+        self.monkey.best_friend = self.friend
+        self.friend.friends.append(self.monkey)
+        self.friend.best_friend = self.monkey
+        db.session.commit()
+        db.session.delete(self.monkey)
+        db.session.commit()
+        assert self.friend.id != None
