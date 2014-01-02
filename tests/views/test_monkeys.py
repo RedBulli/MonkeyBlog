@@ -39,7 +39,7 @@ class TestMonkeyListings(ViewTestCase):
 
     def test_monkey_ordering_by_name_desc(self):
         self.client.get(
-            url_for('MonkeysView:index', order_by='name', direction='desc'))
+            url_for('MonkeysView:index', order_by='name', direction='DESC'))
         assert self.get_context_variable('monkeys')[0].name == 'Sampo'
         assert self.get_context_variable('monkeys')[1].name == 'Heikki'
         assert self.get_context_variable('monkeys')[2].name == 'Aapo'
@@ -49,7 +49,8 @@ class TestMonkeyListingsOrderingByFriendsCount(ViewTestCase):
     render_templates = False
 
     def setup_method(self, method):
-        super(TestMonkeyListingsOrderingByFriendsCount, self).setup_method(method)
+        super(TestMonkeyListingsOrderingByFriendsCount, self).setup_method(
+            method)
         self.zero_friends = MonkeyFactory(name='Sampo')
         self.two_friends = MonkeyFactory(name='Aapo')
         self.one_friend = MonkeyFactory(name='Heikki')
@@ -60,7 +61,7 @@ class TestMonkeyListingsOrderingByFriendsCount(ViewTestCase):
 
     def test_monkey_ordering_by_friend_count_desc(self):
         self.client.get(
-            url_for('MonkeysView:index', order_by='friends', direction='desc'))
+            url_for('MonkeysView:index', order_by='friends', direction='DESC'))
         assert self.get_context_variable('monkeys')[0] == self.two_friends
         assert self.get_context_variable('monkeys')[1] == self.one_friend
         assert self.get_context_variable('monkeys')[2] == self.zero_friends
@@ -97,7 +98,7 @@ class TestMonkeyListingsOrderingByBestFriendName(ViewTestCase):
     def test_monkey_ordering_by_friend_count_desc(self):
         self.client.get(
             url_for(
-                'MonkeysView:index', order_by='best_friend', direction='desc'))
+                'MonkeysView:index', order_by='best_friend', direction='DESC'))
         assert self.get_context_variable('monkeys')[0] == self.jussi_sampo
         assert self.get_context_variable('monkeys')[1] == self.sampo_jussi
         assert self.get_context_variable('monkeys')[2] == self.aapo_heikki

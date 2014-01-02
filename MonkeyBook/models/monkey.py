@@ -4,16 +4,16 @@ from sqlalchemy_utils import EmailType
 
 
 monkey_friends = db.Table('monkey_friends',
-    db.Column('monkey_id', db.Integer, db.ForeignKey('monkey.id'),
-              primary_key=True
+    db.Column(
+        'monkey_id', db.Integer, db.ForeignKey('monkey.id'), primary_key=True
     ),
-    db.Column('friend_id', db.Integer, db.ForeignKey('monkey.id'),
-              primary_key=True
+    db.Column(
+        'friend_id', db.Integer, db.ForeignKey('monkey.id'), primary_key=True
     )
 )
 
 class Monkey(db.Model):
-    id = db.Column(db.Integer, autoincrement='ignore_fk', primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     email = db.Column(EmailType(), nullable=False, unique=True)
     age = db.Column(db.Integer, nullable=False)
@@ -30,8 +30,8 @@ class Monkey(db.Model):
         db.Integer, db.ForeignKey('monkey.id', ondelete='SET NULL')
     )
     best_friend = db.relationship(
-        'Monkey', uselist=False, foreign_keys=[best_friend_id],
-        remote_side=[id], primaryjoin=best_friend_id==id, post_update=True
+        'Monkey', foreign_keys=[best_friend_id], remote_side=[id], 
+        uselist=False, post_update=True, backref='best_friended_by'
     )
 
     def __init__(self, name=None, email=None, age=None, friends=[], 

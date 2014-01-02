@@ -49,4 +49,19 @@
   {% endfor %}
   </tbody>
 </table>
+
+<div class=pagination>
+  Page: 
+  {%- for page in pagination.iter_pages() %}
+    {% if page %}
+      {% if page != pagination.page %}
+        <a href="{{ url_for('MonkeysView:index', order_by=order_by, direction=direction, page=page) }}">{{ page }}</a>
+      {% else %}
+        <strong>{{ page }}</strong>
+      {% endif %}
+    {% else %}
+      <span class=ellipsis>…</span>
+    {% endif %}
+  {%- endfor %}
+  </div>
 {% endblock %}

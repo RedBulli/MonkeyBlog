@@ -25,8 +25,10 @@ class MonkeyForm(Form):
         id = None
         if (monkey != None):
             id = monkey.id
-        self.friends.query = Monkey.query.filter(Monkey.id != id)
-        self.best_friend.query = Monkey.query.filter(Monkey.id != id)
+        self.friends.query = Monkey.query.filter(Monkey.id != id).order_by(
+            Monkey.name)
+        self.best_friend.query = Monkey.query.filter(Monkey.id != id).order_by(
+            Monkey.name)
 
     name = StringField(u'Name', validators=[Length(min=2, max=64)])
     email = StringField(u'Email', validators=[Email()])
