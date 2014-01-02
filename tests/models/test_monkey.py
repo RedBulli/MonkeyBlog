@@ -62,22 +62,20 @@ class TestMonkeyBestFriend(BaseTestCase):
         self.monkey.friends.append(self.friend)
         db.session.commit()
         self.monkey.best_friend = self.friend
-        print self.monkey.best_friend
         db.session.commit()
-        print self.monkey.best_friend_id
         assert Monkey.query.get(self.monkey.id).best_friend == self.friend
 
-    def test_remove_friendship(self):
+    def test_remove_friendship_should_not_delete_friend(self):
         friend_id = self.friend.id
         self.monkey.friends.append(self.friend)
-        db.session.commit()
         self.monkey.friends = []
         db.session.commit()
         assert Monkey.query.get(friend_id) == self.friend
 
-    def test_delete_friend_with_best_friend(self):
-        monkey_count = Monkey.query.count()
+    def test_delete_monkey_with_best_friend_should_not_delete_friend(self):
+        original_monkey_count = Monkey.query.count()
         self.add_as_best_friends_both_ways(self.monkey, self.friend)
         db.session.delete(self.monkey)
         db.session.commit()
-        assert Monkey.query.count() == monkey_count - 1
+        assert Monkey.query.count() == original_monkey_count - 1
+        assert Monkey.query.get(self.friend.id) == self.friend
