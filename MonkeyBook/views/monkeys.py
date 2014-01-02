@@ -14,12 +14,20 @@ class MonkeyViewHelper:
     def create_monkey(self, form):
         monkey = Monkey()
         form.populate_obj(monkey)
+        best_friend = monkey.best_friend
+        monkey.best_friend = None
         db.session.add(monkey)
+        db.session.commit()
+        monkey.best_friend = best_friend
         db.session.commit()
         return monkey
 
     def update_monkey(self, monkey, form):
         form.populate_obj(monkey)
+        best_friend = monkey.best_friend
+        monkey.best_friend = None
+        db.session.commit()
+        monkey.best_friend = best_friend
         db.session.commit()
 
     def delete_monkey(self, id):

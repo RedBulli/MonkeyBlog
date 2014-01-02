@@ -2,9 +2,10 @@ from flask import abort
 from flask.ext.sqlalchemy import Pagination
 from sqlalchemy import func
 from sqlalchemy.orm import aliased
+from sqlalchemy.sql import and_
 
 from MonkeyBook.extensions import db
-from MonkeyBook.models.monkey import Monkey, monkey_friends
+from MonkeyBook.models.monkey import Monkey, monkey_friends, best_friends
 
 
 class MonkeyListQueries:
@@ -37,8 +38,11 @@ class MonkeyListQueries:
         best_friend_table = aliased(Monkey)
         query = Monkey.query \
             .outerjoin(
-                best_friend_table, 
-                best_friend_table.id == Monkey.best_friend_id
+                best_friends, 
+                best_friends.c.monkey_id == Monkey.id
+            ).outerjoin(
+                best_friend_table,
+                best_friends.c.friend_id == best_friend_table.id
             ).order_by('monkey_1.name ' + direction + ' NULLS LAST')
         return query
 

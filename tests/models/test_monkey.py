@@ -8,6 +8,10 @@ from MonkeyBook.models.monkey import Monkey
 from MonkeyBook.extensions import db
 
 
+import logging
+logging.basicConfig()
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
 class TestMonkeyColumnExistences(BaseTestCase):
     def setup_method(self, method):
         super(TestMonkeyColumnExistences, self).setup_method(method)
@@ -53,10 +57,16 @@ class TestMonkeyBestFriend(BaseTestCase):
 
     def add_as_best_friends_both_ways(self, monkey, friend):
         monkey.friends.append(friend)
-        monkey.best_friend = friend
         friend.friends.append(monkey)
+        db.session.commit()
+        monkey.best_friend = friend
         friend.best_friend = monkey
         db.session.commit()
+
+    def test_add_best_friend_that_is_not_a_friend(self):
+        self.monkey.best_friend = self.friend
+        with raises(IntegrityError):
+            db.session.commit()
 
     def test_add_best_friend(self):
         self.monkey.friends.append(self.friend)
@@ -68,9 +78,19 @@ class TestMonkeyBestFriend(BaseTestCase):
     def test_remove_friendship_should_not_delete_friend(self):
         friend_id = self.friend.id
         self.monkey.friends.append(self.friend)
+        db.session.commit()
         self.monkey.friends = []
         db.session.commit()
         assert Monkey.query.get(friend_id) == self.friend
+
+    def test_remove_friendship_with_best_friend_should_remove_best_friend(self):
+        self.monkey.friends.append(self.friend)
+        db.session.commit()
+        self.monkey.best_friend = self.friend
+        db.session.commit()
+        self.monkey.friends = []
+        db.session.commit()
+        assert Monkey.query.get(self.monkey.id).best_friend == None
 
     def test_delete_monkey_with_best_friend_should_not_delete_friend(self):
         original_monkey_count = Monkey.query.count()

@@ -1,14 +1,30 @@
 from MonkeyBook.extensions import db
 
 from sqlalchemy_utils import EmailType
+from sqlalchemy import ForeignKeyConstraint
 
 
 monkey_friends = db.Table('monkey_friends',
     db.Column(
-        'monkey_id', db.Integer, db.ForeignKey('monkey.id'), primary_key=True
+        'monkey_id', db.Integer,
+        db.ForeignKey('monkey.id', onupdate='CASCADE', ondelete='CASCADE'),
+        primary_key=True
     ),
     db.Column(
-        'friend_id', db.Integer, db.ForeignKey('monkey.id'), primary_key=True
+        'friend_id', db.Integer,
+        db.ForeignKey('monkey.id', onupdate='CASCADE', ondelete='CASCADE'),
+        primary_key=True
+    )
+)
+
+best_friends = db.Table('best_friends',
+    db.Column('monkey_id', db.Integer, primary_key=True),
+    db.Column('friend_id', db.Integer),
+    ForeignKeyConstraint(
+        ['monkey_id', 'friend_id'],
+        ['monkey_friends.monkey_id', 'monkey_friends.friend_id'],
+        name='fk_favorite_entry', use_alter=True, onupdate='CASCADE', 
+        ondelete='CASCADE'
     )
 )
 
@@ -27,11 +43,12 @@ class Monkey(db.Model):
         foreign_keys=[monkey_friends.c.monkey_id, monkey_friends.c.friend_id]
     )
 
-    best_friend_id = db.Column(
-        db.Integer, db.ForeignKey('monkey.id', ondelete='SET NULL')
-    )
     best_friend = db.relationship(
-        'Monkey', foreign_keys=[best_friend_id], remote_side=[id], 
+        'Monkey', secondary=best_friends, 
+        primaryjoin=id==best_friends.c.monkey_id,
+        secondaryjoin=id==best_friends.c.friend_id,
+        foreign_keys=[best_friends.c.monkey_id, best_friends.c.friend_id], 
+        remote_side=[id], 
         uselist=False, post_update=True, backref='best_friended_by'
     )
 
