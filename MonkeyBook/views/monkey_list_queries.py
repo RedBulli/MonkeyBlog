@@ -23,16 +23,8 @@ class MonkeyListQueries:
                                                        page_size):
         query = self.get_monkeys_ordered_by_friends_count_query(direction)
         pagination = self.paginate(query, page, page_size)
-        pagination.items = self.get_monkeys_from_list_of_tuples(
-            pagination.items)
+        pagination.items = map(lambda item: item[0], pagination.items)
         return pagination
-
-    def get_monkeys_from_list_of_tuples(self, tuples):
-        monkeys = []
-        for row in tuples:
-            row[0].friend_count = row[1]
-            monkeys.append(row[0])
-        return monkeys
 
     def get_monkeys_ordered_by_friends_count_query(self, direction):
         return db.session.query(Monkey, 
