@@ -14,6 +14,7 @@ class MonkeyViewHelper:
     def create_monkey(self, form):
         monkey = Monkey()
         form.populate_obj(monkey)
+        #Workaround to commit best_friend after the creation
         best_friend = monkey.best_friend
         monkey.best_friend = None
         db.session.add(monkey)
@@ -24,6 +25,7 @@ class MonkeyViewHelper:
 
     def update_monkey(self, monkey, form):
         form.populate_obj(monkey)
+        #Workaround to commit best_friend after the creation
         best_friend = monkey.best_friend
         monkey.best_friend = None
         db.session.commit()

@@ -48,8 +48,8 @@ class Monkey(db.Model):
         primaryjoin=id==best_friends.c.monkey_id,
         secondaryjoin=id==best_friends.c.friend_id,
         foreign_keys=[best_friends.c.monkey_id, best_friends.c.friend_id], 
-        remote_side=[id], 
-        uselist=False, post_update=True, backref='best_friended_by'
+        remote_side=[id], uselist=False, post_update=True, 
+        backref='best_friended_by'
     )
 
     def __init__(self, name=None, email=None, age=None, friends=[], 
