@@ -51,23 +51,33 @@ class TestMonkeyBestFriend(BaseTestCase):
         self.friend = MonkeyFactory(name='Paras ystava')
         self.monkey = MonkeyFactory()
 
-    def test_add_best_friend_that_is_not_a_friend(self):
-        self.monkey.best_friend = self.friend
-        with raises(IntegrityError):
-            db.session.commit()
+    def add_as_best_friends_both_ways(self, monkey, friend):
+        monkey.friends.append(friend)
+        monkey.best_friend = friend
+        friend.friends.append(monkey)
+        friend.best_friend = monkey
+        db.session.commit()
 
     def test_add_best_friend(self):
         self.monkey.friends.append(self.friend)
-        self.monkey.best_friend = self.friend
         db.session.commit()
+        self.monkey.best_friend = self.friend
+        print self.monkey.best_friend
+        db.session.commit()
+        print self.monkey.best_friend_id
         assert Monkey.query.get(self.monkey.id).best_friend == self.friend
 
-    def test_delete_friend_with_best_friend(self):
+    def test_remove_friendship(self):
+        friend_id = self.friend.id
         self.monkey.friends.append(self.friend)
-        self.monkey.best_friend = self.friend
-        self.friend.friends.append(self.monkey)
-        self.friend.best_friend = self.monkey
         db.session.commit()
+        self.monkey.friends = []
+        db.session.commit()
+        assert Monkey.query.get(friend_id) == self.friend
+
+    def test_delete_friend_with_best_friend(self):
+        monkey_count = Monkey.query.count()
+        self.add_as_best_friends_both_ways(self.monkey, self.friend)
         db.session.delete(self.monkey)
         db.session.commit()
-        assert self.friend.id != None
+        assert Monkey.query.count() == monkey_count - 1

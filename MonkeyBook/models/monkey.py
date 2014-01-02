@@ -1,41 +1,25 @@
 from MonkeyBook.extensions import db
 
 from sqlalchemy_utils import EmailType
-from sqlalchemy.schema import ForeignKeyConstraint
 
 
 monkey_friends = db.Table('monkey_friends',
-    db.Column(
-        'monkey_id',
-        db.Integer,
-        db.ForeignKey('monkey.id', onupdate='CASCADE', ondelete='CASCADE'),
-        primary_key=True
+    db.Column('monkey_id', db.Integer, db.ForeignKey('monkey.id'),
+              primary_key=True
     ),
-    db.Column(
-        'friend_id',
-        db.Integer,
-        db.ForeignKey('monkey.id', onupdate='CASCADE', ondelete='CASCADE'),
-        primary_key=True
+    db.Column('friend_id', db.Integer, db.ForeignKey('monkey.id'),
+              primary_key=True
     )
 )
 
 class Monkey(db.Model):
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ['id', 'best_friend_id'],
-            ['monkey_friends.monkey_id', 'monkey_friends.friend_id'],
-            name='fk_best_friend_constraint', use_alter=True,
-            onupdate='CASCADE', ondelete='CASCADE'
-        ),
-    )
-
     id = db.Column(db.Integer, autoincrement='ignore_fk', primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     email = db.Column(EmailType(), nullable=False, unique=True)
     age = db.Column(db.Integer, nullable=False)
 
-    friends = db.relationship('Monkey', 
-        secondary=monkey_friends,
+    friends = db.relationship(
+        'Monkey', secondary=monkey_friends, 
         primaryjoin=id==monkey_friends.c.monkey_id,
         secondaryjoin=id==monkey_friends.c.friend_id,
         backref='friended_by',
@@ -43,24 +27,15 @@ class Monkey(db.Model):
     )
 
     best_friend_id = db.Column(
-        db.Integer, 
-        db.ForeignKey('monkey.id', onupdate='CASCADE', ondelete='SET NULL')
+        db.Integer, db.ForeignKey('monkey.id', ondelete='SET NULL')
     )
     best_friend = db.relationship(
-        'Monkey',
-        uselist=False,
-        foreign_keys=best_friend_id,
-        remote_side=[id],
-        primaryjoin=best_friend_id==id,
-        post_update=True,
+        'Monkey', uselist=False, foreign_keys=[best_friend_id],
+        remote_side=[id], primaryjoin=best_friend_id==id, post_update=True
     )
 
-    def __init__(self, 
-            name=None, 
-            email=None, 
-            age=None, 
-            friends=[], 
-            best_friend=None):
+    def __init__(self, name=None, email=None, age=None, friends=[], 
+                 best_friend=None):
         self.name = name
         self.email = email
         self.age = age
