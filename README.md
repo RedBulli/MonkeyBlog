@@ -1,5 +1,7 @@
-MonkeyBlog
+MonkeyBook
 ==========
+[Click here for the Heroku demo](http://fm-monkeybook.herokuapp.com/)
+
 Requirements
 ------------
 * [PostgreSQL 9.3](http://www.postgresql.org/download/)
@@ -10,8 +12,8 @@ Development
 -----------
 ```bash
 pip install -r requirements-dev.txt
-createdb monkeyblog
-createdb monkeyblog_test
+createdb monkeybook
+createdb monkeybook_test
 python manage.py syncdb
 ```
 Run tests
