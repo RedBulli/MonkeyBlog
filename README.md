@@ -1,6 +1,5 @@
 MonkeyBook
 ==========
-[Click here for the Heroku demo](http://fm-monkeybook.herokuapp.com/)
 
 Requirements
 ------------
